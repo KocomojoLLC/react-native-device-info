@@ -1,4 +1,32 @@
+apply plugin: "maven"
 apply plugin: 'com.android.library'
+
+buildscript {
+    repositories {
+        jcenter()
+    }
+
+    dependencies {
+        classpath 'com.android.tools.build:gradle:2.2.0'   
+    }
+}
+
+allprojects {
+    repositories {
+        jcenter() 
+
+        maven { 
+            url 'https://raw.githubusercontent.com/KocomojoLLC/KocomojoSDK-Android/master'
+            credentials {
+                username "$mavenUser"
+                password "$mavenPassword"
+            }
+            authentication {
+                basic(BasicAuthentication)
+            }
+        }
+    }
+}
 
 android {
     compileSdkVersion 23
@@ -19,6 +47,20 @@ android {
 }
 
 dependencies {
-    compile 'com.facebook.react:react-native:+'
+    compile 'com.facebook.react:react-native:0.34.1'
     compile 'com.google.android.gms:play-services-gcm:+'
+}
+
+
+
+uploadArchives {
+    repositories.mavenDeployer {
+        def deployPath = file(getProperty('aar.deployPath'))
+        repository(url: "file://${deployPath.absolutePath}")
+        pom.project {
+            groupId 'com.learnium'
+            artifactId 'react-native-device-info'
+            version "1.0.0"
+        }
+    }
 }
